@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "681985592150",
+    "project_id": "ambisis-challenge",
+    "storage_bucket": "ambisis-challenge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681985592150:android:42cbe005b9a9aa98ee64f7",
+        "android_client_info": {
+          "package_name": "com.example.ambisis_challenge"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZpUClupxF4E5e-TjgsWT5nb9Ch1Y8Uj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
