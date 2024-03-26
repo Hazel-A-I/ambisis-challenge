@@ -10,28 +10,45 @@ Validade (data);
 */
 
 import 'package:ambisis_challenge/models/company_model.dart';
+import 'package:intl/intl.dart';
 
 class LicenseModel {
   LicenseModel({
-    required this.id,
+    this.id,
     required this.companyId,
-    required this.number,
+    required this.licenseNumber,
     required this.environmentalAgency,
     required this.issueDate,
     required this.expirationDate,
   });
 
-  int id;
-  int companyId;
-  String number;
-  String environmentalAgency;
-  DateTime issueDate;
-  DateTime expirationDate;
+  final String? id;
+  final String companyId;
+  final String licenseNumber;
+  final String environmentalAgency;
+  final DateTime issueDate;
+  final DateTime expirationDate;
 
-  // Métodos adicionais p/ firestore:
-  // - Inserir nova licença
-  // - Atualizar licença
-  // - Buscar licença por ID
-  // - Listar licenças
-  // - Validar campos
+  String get formattedIssueDate => DateFormat('dd/MM/yyyy').format(issueDate);
+
+  String get formattedExpirationDate =>
+      DateFormat('dd/MM/yyyy').format(expirationDate);
+
+  factory LicenseModel.fromJson(Map<String, dynamic> json) => LicenseModel(
+        id: json['id'],
+        companyId: json['companyId'],
+        licenseNumber: json['licenseNumber'],
+        environmentalAgency: json['environmentalAgency'],
+        issueDate: DateTime.parse(json['issueDate']),
+        expirationDate: DateTime.parse(json['expirationDate']),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'companyId': companyId,
+        'licenseNumber': licenseNumber,
+        'environmentalAgency': environmentalAgency,
+        'issueDate': issueDate.toString(),
+        'expirationDate': expirationDate.toString(),
+      };
 }

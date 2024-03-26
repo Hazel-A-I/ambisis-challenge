@@ -1,63 +1,84 @@
 /*
 Cadastro de empresa:
 Campos necessários:
-Razão social (texto);
-CNPJ (texto);
-CEP (texto);
-Cidade (texto);
-Estado (texto);
-Bairro (texto);
-Complemento (texto);
+Razão social (nome profissional da empresa) (texto);
+CNPJ (cadastro nacional de pessoa juridica) (texto);
+Endereço {
+  CEP (texto);
+  Cidade (texto);
+  Estado (texto);
+  Bairro (texto);
+  Complemento (texto);
+}
 Abaixo dos campos, colocar uma lista de todas as licenças ambientais dessa empresa. E um botão para adicionar uma nova licença nessa empresa (esse botão direciona para o cadastro de licença).
 
 */
 
 import 'package:ambisis_challenge/interfaces/licensable.dart';
+import 'package:ambisis_challenge/interfaces/license_repo.dart';
 import 'package:ambisis_challenge/models/license_model.dart';
 import 'package:ambisis_challenge/models/address.dart';
+import 'package:intl/intl.dart';
 
 class CompanyModel implements Licensable {
   CompanyModel(
       {required this.legalName,
       required this.cnpj,
       required this.address,
-      required this.licenses});
+      required this.licenseRepository})
+      : _licenses = [],
+        _addedAt = DateTime.now();
 
   final String legalName;
   final String cnpj;
   final Address address;
-  final List<LicenseModel> licenses;
+  final LicenseRepository licenseRepository;
+  final List<LicenseModel> _licenses;
+  final DateTime _addedAt;
 
+  String get addedAt {
+    return DateFormat('dd/MM/yyyy').format(_addedAt);
+  }
+
+  /// Estou delegando os métodos como getLicenses para o LicenseRepository para não fazer overload na classe.
   @override
-  List<LicenseModel> getLicenses() {
-    return licenses;
+  Future<List<LicenseModel>> getLicenses() async {
+    return await licenseRepository.readLicenses(legalName);
   }
 
   @override
-  void addLicense(LicenseModel license) {
-    licenses.add(license);
+  void addLicense(LicenseModel license) async {
+    _licenses.add(license);
+    await licenseRepository.createLicense(license);
   }
 
   @override
-  void removeLicense(LicenseModel license) {
-    licenses.remove(license);
+  void removeLicense(LicenseModel license) async {
+    _licenses.remove(license);
+    await licenseRepository.deleteLicense(license);
   }
 
   @override
-  void updateLicense(LicenseModel license) {
-    int index = licenses.indexOf(license);
-    licenses[index] = license;
+  Future<void> updateLicense(LicenseModel license) async {
+    int index = _licenses.indexOf(license);
+    if (index != -1) {
+      _licenses[index] = license;
+    }
+    await licenseRepository.updateLicense(license);
   }
 
+  /// são duas funções que achei que em algum momento eu poderia precisar.
   @override
   void sortLicenses() {
-    licenses.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
+    _licenses.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
   }
 
   @override
-  Iterable<LicenseModel> filterLicenses(String filter) {
-    return licenses.where((license) =>
-        license.number.contains(filter) ||
-        license.environmentalAgency.contains(filter));
+  List<LicenseModel> filterLicenses(String filter) {
+    return _licenses
+        .where((license) =>
+            license.licenseNumber.contains(filter) ||
+            license.environmentalAgency.contains(filter))
+        .toList();
   }
 }
