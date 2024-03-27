@@ -17,9 +17,10 @@ class FirebaseLicenseRepository implements LicenseRepository {
         .get();
 
     /// Vai vir chave valor, então é mt melhor pra prever a tipagem se tiver type castado, e não genérico como Object?.
-    return snapshot.docs
-        .map((doc) => LicenseModel.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
+    return snapshot.docs.map((doc) {
+      final String id = doc.id;
+      return LicenseModel.fromJson(doc.data() as Map<String, dynamic>, id);
+    }).toList();
   }
 
   @override

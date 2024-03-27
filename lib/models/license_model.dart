@@ -34,7 +34,8 @@ class LicenseModel {
   String get formattedExpirationDate =>
       DateFormat('dd/MM/yyyy').format(expirationDate);
 
-  factory LicenseModel.fromJson(Map<String, dynamic> json) => LicenseModel(
+  factory LicenseModel.fromJson(Map<String, dynamic> json, String id) =>
+      LicenseModel(
         id: json['id'],
         companyId: json['companyId'],
         licenseNumber: json['licenseNumber'],

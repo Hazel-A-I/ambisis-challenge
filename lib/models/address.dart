@@ -12,4 +12,19 @@ class Address {
     required this.neighborhood,
     required this.complement,
   });
+
+  factory Address.fromJson(Map<String, dynamic> json) => Address(
+      postalCode: json['postalCode'],
+      city: json['city'],
+      state: json['state'],
+      neighborhood: json['neighborhood'],
+      complement: json['complement']);
+
+  Map<String, dynamic> toJson() => {
+        "postalCode": postalCode,
+        "city": city,
+        "state": state,
+        "neighborhood": neighborhood,
+        "complement": complement,
+      };
 }
