@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:ambisis_challenge/bloc/cubits/auth_cubit.dart';
 import 'package:ambisis_challenge/screens/homepage.dart';
 import 'package:ambisis_challenge/screens/loginpage.dart';
 import 'package:ambisis_challenge/screens/signingpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'firebase_options.dart';
 
@@ -24,11 +28,11 @@ class MyApp extends StatelessWidget {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginPage(),
+        builder: (context, state) => LoginPage(),
       ),
       GoRoute(
         path: '/signing',
-        builder: (context, state) => const SigningPage(),
+        builder: (context, state) => SigningPage(),
       ),
       GoRoute(
         path: '/company-signing',
@@ -42,10 +46,12 @@ class MyApp extends StatelessWidget {
   );
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(useMaterial3: true),
-      routerConfig: _router,
+    return BlocProvider<UserCubit>(
+      create: (context) => UserCubit(),
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerConfig: _router,
+      ),
     );
   }
 }

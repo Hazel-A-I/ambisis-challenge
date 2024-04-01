@@ -8,25 +8,49 @@ class CompanyRepository {
       : _firestore = firestore;
 
   Future<List<CompanyModel>> readCompanies() async {
-    final snapshot = await _firestore.collection('companies').get();
-    return snapshot.docs.map((doc) {
-      final String id = doc.id;
-      return CompanyModel.fromJson(doc.data(), id);
-    }).toList();
+    try {
+      final snapshot = await _firestore.collection('companies').get();
+      return snapshot.docs.map((doc) {
+        final String id = doc.id;
+        return CompanyModel.fromJson(doc.data(), id);
+      }).toList();
+    } on FirebaseException catch (e) {
+      throw ("Error reading companies: ${e.message}");
+    } catch (e) {
+      throw ("Unexpected error: ${e.toString()}");
+    }
   }
 
   Future<void> createCompany(CompanyModel company) async {
-    await _firestore.collection('companies').add(company.toJson());
+    try {
+      await _firestore.collection('companies').add(company.toJson());
+    } on FirebaseException catch (e) {
+      throw ("Error creating companies: ${e.message}");
+    } catch (e) {
+      throw ("Unexpected error: ${e.toString()}");
+    }
   }
 
   Future<void> updateCompany(CompanyModel company) async {
-    await _firestore
-        .collection('companies')
-        .doc(company.id)
-        .update(company.toJson());
+    try {
+      await _firestore
+          .collection('companies')
+          .doc(company.id)
+          .update(company.toJson());
+    } on FirebaseException catch (e) {
+      throw ("Error updating companies: ${e.message}");
+    } catch (e) {
+      throw ("Unexpected error: ${e.toString()}");
+    }
   }
 
   Future<void> deleteCompany(CompanyModel company) async {
-    await _firestore.collection('companies').doc(company.id).delete();
+    try {
+      await _firestore.collection('companies').doc(company.id).delete();
+    } on FirebaseException catch (e) {
+      throw ("Error deleting companies: ${e.message}");
+    } catch (e) {
+      throw ("Unexpected error: ${e.toString()}");
+    }
   }
 }

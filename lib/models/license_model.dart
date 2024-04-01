@@ -8,8 +8,6 @@ Emissão (data);
 Validade (data);
 
 */
-
-import 'package:ambisis_challenge/models/company_model.dart';
 import 'package:intl/intl.dart';
 
 class LicenseModel {
