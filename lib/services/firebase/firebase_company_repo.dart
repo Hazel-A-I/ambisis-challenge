@@ -7,19 +7,23 @@ class CompanyRepository {
   CompanyRepository(FirebaseFirestore firestore) : _firestore = firestore;
 
   Future<CompanyModel> getCompanyById(String id) async {
-    final QuerySnapshot querySnapshot =
-        await _firestore.collection('companies').where(id).get();
+    final QuerySnapshot querySnapshot = await _firestore
+        .collection('companies')
+        .where("id", isEqualTo: id)
+        .get();
     return querySnapshot.docs.map((doc) {
-      final String docId = doc.id;
-      return CompanyModel.fromJson(doc.data() as Map<String, dynamic>, docId);
+      return CompanyModel.fromJson(
+        doc.data() as Map<String, dynamic>,
+      );
     }).first;
   }
 
   Future<List<CompanyModel>> readCompanies() async {
     final snapshot = await _firestore.collection('companies').get();
     return snapshot.docs.map((doc) {
-      final String id = doc.id;
-      return CompanyModel.fromJson(doc.data(), id);
+      return CompanyModel.fromJson(
+        doc.data(),
+      );
     }).toList();
   }
 

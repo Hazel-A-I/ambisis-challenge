@@ -5,6 +5,7 @@ import 'package:ambisis_challenge/bloc/cubits/company_cubit.dart';
 import 'package:ambisis_challenge/bloc/cubits/license_cubit.dart';
 import 'package:ambisis_challenge/models/company_model.dart';
 import 'package:ambisis_challenge/models/license_model.dart';
+import 'package:ambisis_challenge/models/route_arguments.dart';
 import 'package:ambisis_challenge/screens/company_details.dart';
 import 'package:ambisis_challenge/screens/company_signing.dart';
 import 'package:ambisis_challenge/screens/home_page.dart';
@@ -45,13 +46,19 @@ class MyApp extends StatelessWidget {
       ),
       GoRoute(
         path: '/company-signing',
-        builder: (context, state) =>
-            CompanySigningPage(isEditing: state.extra as bool?),
+        builder: (context, state) => CompanySigningPage(
+          routeArguments: RouteArguments(
+              isEditing: (state.extra as RouteArguments).isEditing,
+              currentCompany: (state.extra as RouteArguments).currentCompany),
+        ),
       ),
       GoRoute(
         path: '/license-signing',
         builder: (context, state) => LicenseSignPage(
-          isEditing: state.extra as bool?,
+          licenseArguments: LicenseArguments(
+              isEditing: (state.extra as LicenseArguments).isEditing,
+              currentLicense: (state.extra as LicenseArguments).currentLicense,
+              currentCompany: (state.extra as LicenseArguments).currentCompany),
         ),
       ),
       GoRoute(

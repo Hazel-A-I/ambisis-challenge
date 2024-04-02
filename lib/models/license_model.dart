@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 
 class LicenseModel {
   LicenseModel({
-    this.id,
+    required this.id,
     required this.companyId,
     required this.licenseNumber,
     required this.environmentalAgency,
@@ -20,20 +20,19 @@ class LicenseModel {
     required this.expirationDate,
   });
 
-  final String? id;
+  final String id;
   final String companyId;
   final String licenseNumber;
   final String environmentalAgency;
   final DateTime issueDate;
   final DateTime expirationDate;
 
-  String get formattedIssueDate => DateFormat('dd/MM/yyyy').format(issueDate);
+  String get formattedIssueDate => DateFormat('yyyy-MM-dd').format(issueDate);
 
   String get formattedExpirationDate =>
-      DateFormat('dd/MM/yyyy').format(expirationDate);
+      DateFormat('yyyy-MM-dd').format(expirationDate);
 
-  factory LicenseModel.fromJson(Map<String, dynamic> json, String id) =>
-      LicenseModel(
+  factory LicenseModel.fromJson(Map<String, dynamic> json) => LicenseModel(
         id: json['id'],
         companyId: json['companyId'],
         licenseNumber: json['licenseNumber'],

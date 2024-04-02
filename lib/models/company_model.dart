@@ -21,16 +21,17 @@ import 'package:ambisis_challenge/services/firebase/firebase_license_repo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+/// queria fazer um padrão pra licensable mas desisti depois T-T
 class CompanyModel implements Licensable {
   CompanyModel({
-    this.id,
+    required this.id,
     required this.legalName,
     required this.cnpj,
     required this.address,
   })  : _licenses = [],
         _addedAt = DateTime.now();
 
-  final String? id;
+  final String id;
   final String legalName;
   final String cnpj;
   final Address address;
@@ -101,8 +102,7 @@ class CompanyModel implements Licensable {
         .toList();
   }
 
-  factory CompanyModel.fromJson(Map<String, dynamic> json, String id) =>
-      CompanyModel(
+  factory CompanyModel.fromJson(Map<String, dynamic> json) => CompanyModel(
         id: json['id'],
         legalName: json['legalName'],
         cnpj: json['cnpj'],

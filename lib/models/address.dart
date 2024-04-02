@@ -3,7 +3,7 @@ class Address {
   final String city;
   final String state;
   final String neighborhood;
-  final String? complement;
+  final String complement;
 
   Address({
     required this.postalCode,

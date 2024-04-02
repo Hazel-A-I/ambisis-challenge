@@ -1,5 +1,6 @@
 import 'package:ambisis_challenge/models/license_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LicenseDetailsPage extends StatelessWidget {
   final LicenseModel license;
@@ -9,7 +10,10 @@ class LicenseDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back)),
         title: const Text('Licença Ambiental'),
       ),
       body: Padding(

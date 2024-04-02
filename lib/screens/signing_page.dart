@@ -46,7 +46,6 @@ class SigningPage extends StatelessWidget {
                 const SizedBox(
                   height: 25,
                 ),
-
                 CustomFormField(
                     controller: displayName,
                     labelText: "Nome de usuário",
@@ -116,7 +115,6 @@ class SigningPage extends StatelessWidget {
                 const SizedBox(
                   height: 25,
                 ),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   child: Column(
@@ -134,17 +132,9 @@ class SigningPage extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(
                   height: 25,
                 ),
-                // photo
-                // display name
-                // email
-                // password
-                // re-enter password
-                // button_primary "Criar conta"
-                // mockup contato p/ suporte
               ],
             ),
           ),

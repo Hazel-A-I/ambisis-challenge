@@ -6,7 +6,7 @@ import 'package:ambisis_challenge/bloc/cubits/company_cubit.dart';
 import 'package:ambisis_challenge/bloc/cubits/company_states.dart';
 import 'package:ambisis_challenge/components/confirm_box.dart';
 import 'package:ambisis_challenge/models/company_model.dart';
-import 'package:ambisis_challenge/screens/company_details.dart';
+import 'package:ambisis_challenge/models/route_arguments.dart';
 import 'package:ambisis_challenge/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +38,8 @@ class HomePage extends StatelessWidget {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.add),
-                  onPressed: () => context.go('/company-signing'),
+                  onPressed: () => context.go('/company-signing',
+                      extra: const RouteArguments(isEditing: false)),
                 ),
               ],
             ),
@@ -58,8 +59,11 @@ class HomePage extends StatelessWidget {
                       companyCubit.fetchCompanies();
                       return const Text(
                           'Nenhuma empresa foi adicionada ainda.');
+                    } else if (state is ErrorCompanyState) {
+                      return Center(
+                        child: Text("${state.errorMessage} aa"),
+                      );
                     } else {
-                      companyCubit.fetchCompanies();
                       return const Center(
                         child: Text('Não foi possível filtrar empresas.'),
                       );
@@ -86,15 +90,17 @@ class HomePage extends StatelessWidget {
       itemBuilder: (context, index) {
         return ListTile(
           onTap: () {
-            final selectedUser = companies[index];
-            context.go('/company-details', extra: selectedUser);
+            final selectedCompany = companies[index];
+            context.go('/company-details', extra: selectedCompany);
           },
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                   onPressed: () {
-                    context.go('/company-signing', extra: true);
+                    context.go('/company-signing',
+                        extra: RouteArguments(
+                            currentCompany: companies[index], isEditing: true));
                   },
                   icon: const Icon(Icons.edit)),
               const SizedBox(

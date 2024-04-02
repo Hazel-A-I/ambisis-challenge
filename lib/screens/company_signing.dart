@@ -4,10 +4,14 @@ import 'package:ambisis_challenge/components/confirm_box.dart';
 import 'package:ambisis_challenge/components/form_field.dart';
 import 'package:ambisis_challenge/models/address.dart';
 import 'package:ambisis_challenge/models/company_model.dart';
+import 'package:ambisis_challenge/models/license_model.dart';
+import 'package:ambisis_challenge/models/route_arguments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+/// For sync between edit mode and sign mode. Need to make error handling for when the user passes incorrect values to the routing.
 
 class CompanySigningPage extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -19,15 +23,31 @@ class CompanySigningPage extends StatelessWidget {
   final _neighborhoodController = TextEditingController();
   final _complementController = TextEditingController();
 
-  CompanySigningPage({super.key, this.isEditing = false});
-  final bool? isEditing;
-  String textoEditar() {
-    return isEditing ?? false ? "Editar " : '';
+  CompanySigningPage({super.key, required this.routeArguments});
+  final RouteArguments routeArguments;
+  String textEdit() {
+    return routeArguments.isEditing ? "Editar " : '';
+  }
+
+  void editingInputsFill() {
+    if (routeArguments.isEditing && routeArguments.currentCompany != null) {
+      _legalNameController.text = routeArguments.currentCompany!.legalName;
+      _cnpjController.text = routeArguments.currentCompany!.cnpj;
+      _postalCodeController.text =
+          routeArguments.currentCompany!.address.postalCode;
+      _cityController.text = routeArguments.currentCompany!.address.city;
+      _stateController.text = routeArguments.currentCompany!.address.state;
+      _neighborhoodController.text =
+          routeArguments.currentCompany!.address.neighborhood;
+      _complementController.text =
+          routeArguments.currentCompany!.address.complement;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final companyCubit = context.read<CompanyCubit>();
+    editingInputsFill();
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
@@ -45,18 +65,18 @@ class CompanySigningPage extends StatelessWidget {
             children: [
               CustomFormField(
                 controller: _legalNameController,
-                labelText: '${textoEditar()}Razão social - Nome legal',
+                labelText: '${textEdit()}Razão social - Nome legal',
                 obscureText: false,
-                validator: (value) => value == null || value.isEmpty
+                validator: (value) => (value == null || value.isEmpty)
                     ? 'Razão social/Nome legal é obrigatório'
                     : null,
               ),
               const SizedBox(height: 20.0),
               CustomFormField(
                 controller: _cnpjController,
-                labelText: '${textoEditar()}CNPJ',
+                labelText: '${textEdit()}CNPJ',
                 obscureText: false,
-                validator: (value) => value == null || value.isEmpty
+                validator: (value) => (value == null || value.isEmpty)
                     ? 'O CNPJ é obrigatório'
                     : null,
                 inputFormatters: [
@@ -69,9 +89,9 @@ class CompanySigningPage extends StatelessWidget {
               const SizedBox(height: 20.0),
               CustomFormField(
                 controller: _postalCodeController,
-                labelText: '${textoEditar()}Código postal / CEP',
+                labelText: '${textEdit()}Código postal / CEP',
                 obscureText: false,
-                validator: (value) => value == null || value.isEmpty
+                validator: (value) => (value == null || value.isEmpty)
                     ? 'Código postal é obrigatório'
                     : null,
                 inputFormatters: [
@@ -82,27 +102,27 @@ class CompanySigningPage extends StatelessWidget {
               const SizedBox(height: 20.0),
               CustomFormField(
                 controller: _cityController,
-                labelText: '${textoEditar()}Cidade',
+                labelText: '${textEdit()}Cidade',
                 obscureText: false,
-                validator: (value) => value == null || value.isEmpty
+                validator: (value) => (value == null || value.isEmpty)
                     ? 'Cidade é obrigatória'
                     : null,
               ),
               const SizedBox(height: 20.0),
               CustomFormField(
                 controller: _stateController,
-                labelText: '${textoEditar()}Estado',
+                labelText: '${textEdit()}Estado',
                 obscureText: false,
-                validator: (value) => value == null || value.isEmpty
+                validator: (value) => (value == null || value.isEmpty)
                     ? 'Estado é obrigatório'
                     : null,
               ),
               const SizedBox(height: 20.0),
               CustomFormField(
                 controller: _neighborhoodController,
-                labelText: '${textoEditar()}Bairro',
+                labelText: '${textEdit()}Bairro',
                 obscureText: false,
-                validator: (value) => value == null || value.isEmpty
+                validator: (value) => (value == null || value.isEmpty)
                     ? 'Bairro é obrigatório'
                     : null,
               ),
@@ -121,9 +141,10 @@ class CompanySigningPage extends StatelessWidget {
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     final company = CompanyModel(
-                      id: (isEditing ?? false
-                          ? null
-                          : DateTime.now().millisecondsSinceEpoch.toString()),
+                      id: (routeArguments.isEditing &&
+                              routeArguments.currentCompany != null)
+                          ? routeArguments.currentCompany!.id
+                          : DateTime.now().millisecondsSinceEpoch.toString(),
                       legalName: _legalNameController.text,
                       cnpj: _cnpjController.text,
                       address: Address(
@@ -134,7 +155,7 @@ class CompanySigningPage extends StatelessWidget {
                         complement: _complementController.text,
                       ),
                     );
-                    isEditing ?? false
+                    routeArguments.isEditing
                         ? companyCubit.updateCompany(company)
                         : companyCubit.createCompany(company);
                     context.go("/");

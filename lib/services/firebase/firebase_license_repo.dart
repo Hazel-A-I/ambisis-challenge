@@ -7,54 +7,64 @@ class FirebaseLicenseRepository implements LicenseRepository {
 
   FirebaseLicenseRepository(this._firestore);
 
-  /// Mais especificamente, o companyId é o nome do documento dentro da coleção (da interface do FireStore)
   @override
   Future<List<LicenseModel>> readLicenses(String companyId) async {
     final QuerySnapshot snapshot = await _firestore
         .collection('companies')
-        .doc(companyId)
-        .collection('licenses')
+        .where("id", isEqualTo: companyId)
         .get();
 
-    /// Vai vir chave valor, então é mt melhor pra prever a tipagem se tiver type castado, e não genérico como Object?.
-    return snapshot.docs.map((doc) {
-      final String id = doc.id;
-      return LicenseModel.fromJson(doc.data() as Map<String, dynamic>, id);
+    final companyDoc = snapshot.docs.first;
+    final licenseSnapshot =
+        await companyDoc.reference.collection('licenses').get();
+
+    if (licenseSnapshot.docs.isEmpty) {
+      return [];
+    }
+    final List<LicenseModel> licenses = licenseSnapshot.docs.map((doc) {
+      return LicenseModel.fromJson(doc.data());
     }).toList();
+
+    return licenses;
   }
 
   @override
   Future<void> createLicense(LicenseModel license) async {
-    await _firestore
+    final QuerySnapshot snapshot = await _firestore
         .collection('companies')
-        .doc(license.companyId)
-        .collection('licenses')
-        .add(license.toJson());
+        .where("id", isEqualTo: license.companyId)
+        .get();
+
+    snapshot.docs.first.reference.collection('licenses').add(license.toJson());
   }
 
   @override
   Future<void> updateLicense(LicenseModel license) async {
-    (license.id != null)
-        ? await _firestore
-            .collection('companies')
-            .doc(license.companyId)
-            .collection('licenses')
-            .doc(license.id)
-            .update(license.toJson())
-        : throw Exception(
-            "O ID da licença não pode estar nulo para a operação de UPDATE!");
+    final QuerySnapshot snapshot = await _firestore
+        .collection('companies')
+        .where("id", isEqualTo: license.companyId)
+        .get();
+
+    final QuerySnapshot licenseSnapshot = await snapshot.docs.first.reference
+        .collection('licenses')
+        .where('id', isEqualTo: license.id)
+        .get();
+
+    licenseSnapshot.docs.first.reference.update(license.toJson());
   }
 
   @override
   Future<void> deleteLicense(LicenseModel license) async {
-    (license.id != null)
-        ? await _firestore
-            .collection('companies')
-            .doc(license.companyId)
-            .collection('licenses')
-            .doc(license.id)
-            .delete()
-        : throw Exception(
-            "O ID da licença não pode estar nulo para a operação de DELETE!");
+    final QuerySnapshot snapshot = await _firestore
+        .collection('companies')
+        .where("id", isEqualTo: license.companyId)
+        .get();
+
+    final QuerySnapshot licenseSnapshot = await snapshot.docs.first.reference
+        .collection('licenses')
+        .where('id', isEqualTo: license.id)
+        .get();
+
+    licenseSnapshot.docs.first.reference.delete();
   }
 }
