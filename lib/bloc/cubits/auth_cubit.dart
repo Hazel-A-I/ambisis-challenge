@@ -6,6 +6,7 @@ import 'package:ambisis_challenge/services/auth/user_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// melhorias: dependency injection, mais states, persistencia de dados, testes.
 class UserCubit extends Cubit<UserState> {
   UserModel? _currentUser;
 
@@ -30,7 +31,9 @@ class UserCubit extends Cubit<UserState> {
       String nickname, String email, String password) async {
     emit(LoadingUserState());
     try {
-      final user = await UserRepository.createUser(nickname, email, password);
+      final UserModel user =
+          await UserRepository.createUser(nickname, email, password);
+      login(email, password);
       emit(LoggedInState(user));
     } catch (error) {
       emit(ErrorUserState(error.toString()));
@@ -51,13 +54,11 @@ class UserCubit extends Cubit<UserState> {
       if (error is FirebaseAuthException) {
         switch (error.code) {
           case 'invalid-email':
-            emit(ErrorUserState('Invalid email address'));
-            break;
-          case 'wrong-password':
-            emit(ErrorUserState('Incorrect password'));
-            break;
+            emit(ErrorUserState('E-mail inválido.'));
+            rethrow;
           default:
-            emit(ErrorUserState('An error occurred. Please try again.'));
+            emit(ErrorUserState('Credencial inválida.'));
+            rethrow;
         }
       } else {
         emit(ErrorUserState(error.toString()));

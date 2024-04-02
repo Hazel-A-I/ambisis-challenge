@@ -114,7 +114,7 @@ class CompanyModel implements Licensable {
       "id": id,
       "legalName": legalName,
       "cnpj": cnpj,
-      "address": address,
+      "address": address.toJson(),
     };
   }
 }

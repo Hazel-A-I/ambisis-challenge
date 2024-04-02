@@ -1,9 +1,18 @@
 import 'dart:async';
 
 import 'package:ambisis_challenge/bloc/cubits/auth_cubit.dart';
-import 'package:ambisis_challenge/screens/homepage.dart';
-import 'package:ambisis_challenge/screens/loginpage.dart';
-import 'package:ambisis_challenge/screens/signingpage.dart';
+import 'package:ambisis_challenge/bloc/cubits/company_cubit.dart';
+import 'package:ambisis_challenge/bloc/cubits/license_cubit.dart';
+import 'package:ambisis_challenge/models/company_model.dart';
+import 'package:ambisis_challenge/models/license_model.dart';
+import 'package:ambisis_challenge/screens/company_details.dart';
+import 'package:ambisis_challenge/screens/company_signing.dart';
+import 'package:ambisis_challenge/screens/home_page.dart';
+import 'package:ambisis_challenge/screens/license_details.dart';
+import 'package:ambisis_challenge/screens/license_signing.dart';
+import 'package:ambisis_challenge/screens/login_page.dart';
+import 'package:ambisis_challenge/screens/signing_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,18 +45,38 @@ class MyApp extends StatelessWidget {
       ),
       GoRoute(
         path: '/company-signing',
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) =>
+            CompanySigningPage(isEditing: state.extra as bool?),
       ),
       GoRoute(
         path: '/license-signing',
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) => LicenseSignPage(
+          isEditing: state.extra as bool?,
+        ),
       ),
+      GoRoute(
+          path: '/company-details',
+          builder: (context, state) =>
+              CompanyDetailsPage(company: state.extra as CompanyModel)),
+      GoRoute(
+          path: '/license-details',
+          builder: (context, state) =>
+              LicenseDetailsPage(license: state.extra as LicenseModel)),
     ],
   );
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<UserCubit>(
-      create: (context) => UserCubit(),
+    final firestore = FirebaseFirestore.instance;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<UserCubit>(
+          create: (context) => UserCubit(),
+        ),
+        BlocProvider<CompanyCubit>(
+            create: (context) => CompanyCubit(firestoreInstance: firestore)),
+        BlocProvider(
+            create: (context) => LicenseCubit(firestoreInstance: firestore))
+      ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerConfig: _router,

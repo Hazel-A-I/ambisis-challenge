@@ -73,7 +73,6 @@ class UserRepository {
       }
       return null;
     } catch (e) {
-      print("${e.toString()} CATCH DO REPOSITORY");
       rethrow;
     }
   }

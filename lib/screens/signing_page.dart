@@ -1,8 +1,10 @@
+import 'package:ambisis_challenge/bloc/cubits/auth_cubit.dart';
 import 'package:ambisis_challenge/components/button_primary.dart';
 import 'package:ambisis_challenge/components/form_field.dart';
 import 'package:ambisis_challenge/services/auth/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SigningPage extends StatelessWidget {
@@ -14,6 +16,7 @@ class SigningPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userCubit = context.read<UserCubit>();
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     bool isValidEmail(String email) {
       return RegExp(
@@ -90,7 +93,7 @@ class SigningPage extends StatelessWidget {
                         throw "As senhas não coincidem";
                       }
 
-                      await UserRepository.createUser(
+                      await userCubit.registerUser(
                           displayName.text, email.text, password.text);
 
                       scaffoldMessenger.showSnackBar(const SnackBar(

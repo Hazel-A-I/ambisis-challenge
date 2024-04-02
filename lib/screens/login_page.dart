@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ambisis_challenge/bloc/cubits/auth_cubit.dart';
+import 'package:ambisis_challenge/bloc/cubits/auth_states.dart';
 import 'package:ambisis_challenge/components/button_primary.dart';
 import 'package:ambisis_challenge/components/button_secondary.dart';
 import 'package:ambisis_challenge/components/form_field.dart';
@@ -24,13 +25,15 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userCubit = context.read<UserCubit>();
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-
+    if (userCubit.isLoggedIn()) {
+      userCubit.logout();
+    }
     Future<void> loginMethod() async {
       try {
         if (formLogin.currentState!.validate()) {
           await userCubit.login(emailController.text, passwordController.text);
 
-          if (userCubit.user != null) {
+          if (userCubit.state is LoggedInState) {
             scaffoldMessenger.showSnackBar(SnackBar(
                 content: Text(
               'Logando como: ${userCubit.user!.nick}',
@@ -40,22 +43,26 @@ class LoginPage extends StatelessWidget {
             context.go('/');
           }
         }
-      } on FirebaseException {
-        print("firebase exceção");
-        scaffoldMessenger.showSnackBar(const SnackBar(
+      } on FirebaseAuthException {
+        if (userCubit.state is ErrorUserState) {
+          final errorMessage = (userCubit.state as ErrorUserState).errorMessage;
+          scaffoldMessenger.showSnackBar(SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-              'O Email ou Senha informados estão inválidos.',
-              style: TextStyle(color: Colors.white),
-            )));
-      } catch (e) {
-        print(" exceção");
-        scaffoldMessenger.showSnackBar(SnackBar(
-            backgroundColor: Colors.red[300],
-            content: Text(
-              e.toString(),
+              errorMessage,
               style: const TextStyle(color: Colors.white),
-            )));
+            ),
+          ));
+        }
+      } catch (e) {
+        // scaffoldMessenger.showSnackBar(SnackBar(
+        //     backgroundColor: Colors.red[300],
+        //     content: Text(
+        //       e.toString(),
+        //       style: const TextStyle(color: Colors.white),
+        //     )));
+        print(e.toString());
+        // infelizmente não vai dar tempo de tratar esse erro
       }
     }
 
