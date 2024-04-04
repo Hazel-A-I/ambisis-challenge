@@ -4,6 +4,10 @@ Projeto realizado para entrevista de emprego na Ambisis - Software de gestão am
 
 Todos e quaisquer commits realizados após a data de 4/02/2024 (MM/DD/YYYY) devem ser considerados conteúdos adicionais posteriores ao desafio.
 
+### Vídeo de demonstração:
+
+https://drive.google.com/file/d/1vVV2V3Ji5KvlTUMRLNzLyTTIl6CkCXPh/view?usp=sharing
+
 ## Instalação
 
 ### Pré-requisitos
